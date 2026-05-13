@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppContext } from "@/lib/context";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import StatCard from "@/components/StatCard";
 import { Activity, CalendarDays, Droplet } from "lucide-react";
 
@@ -25,6 +25,10 @@ export default function Historial() {
   const chartData = Object.values(dataMap).reverse();
   const totalLitros = filteredHistorial.reduce((sum, h) => sum + h.litros, 0);
   const promedioDiario = chartData.length ? totalLitros / chartData.length : 0;
+
+  // Umbral: consumo alto si supera 60 L/día
+  const UMBRAL_ALTO = 60;
+  const getBarColor = (litros: number) => litros > UMBRAL_ALTO ? "#EF4444" : "#22C55E";
 
   return (
     <main className="p-6">
@@ -68,17 +72,31 @@ export default function Historial() {
       <div className="mb-8">
         <h3 className="text-white font-semibold mb-4">Últimos 30 días</h3>
         <div className="h-64 bg-card border border-border rounded-3xl p-4 pt-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+          {/* Leyenda */}
+          <div className="flex gap-4 mb-3 justify-end">
+            <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
+              <span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" />Normal
+            </span>
+            <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
+              <span className="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block" />Consumo alto
+            </span>
+          </div>
+          <ResponsiveContainer width="100%" height="85%">
+            <BarChart data={chartData} barSize={18}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1E1E2E" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dy={10} />
               <YAxis axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dx={-10} />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ backgroundColor: '#12121A', borderColor: '#1E1E2E', borderRadius: '12px' }}
                 itemStyle={{ color: '#fff' }}
+                formatter={(value: number) => [`${value} L`, 'Consumo']}
               />
-              <Line type="monotone" dataKey="litros" stroke="#6366F1" strokeWidth={3} dot={{ fill: '#0A0A0F', stroke: '#6366F1', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, fill: '#8B5CF6' }} />
-            </LineChart>
+              <Bar dataKey="litros" radius={[4, 4, 0, 0]}>
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={getBarColor(entry.litros)} fillOpacity={0.85} />
+                ))}
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>

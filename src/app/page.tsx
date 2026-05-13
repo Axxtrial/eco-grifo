@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/lib/context";
 import { UserCircle } from "lucide-react";
@@ -8,6 +9,7 @@ import {
   ComposedChart,
   Line,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -45,6 +47,10 @@ export default function Home() {
 
   const porcentajeMeta = Math.min((totalConsumoHoy / usuario.metaDiariaLitros) * 100, 100);
 
+  // Umbral para colorear barras: >60 L/día = consumo alto
+  const UMBRAL_ALTO = 60;
+  const getBarColor = (litros: number) => litros > UMBRAL_ALTO ? "#EF4444" : "#22C55E";
+
   return (
     <main className="p-6">
       <header className="flex justify-between items-center mb-8">
@@ -52,9 +58,9 @@ export default function Home() {
           <h1 className="text-sm text-muted">Buenos días,</h1>
           <h2 className="text-xl font-bold text-white">{usuario.nombre}</h2>
         </div>
-        <div className="w-10 h-10 rounded-full bg-gradient-btn flex items-center justify-center">
+        <Link href="/perfil" className="w-10 h-10 rounded-full bg-gradient-btn flex items-center justify-center hover:opacity-80 transition-opacity">
           <UserCircle className="w-6 h-6 text-white" />
-        </div>
+        </Link>
       </header>
 
       {/* Main cards */}
@@ -127,7 +133,11 @@ export default function Home() {
                 contentStyle={{ backgroundColor: '#12121A', borderColor: '#1E1E2E', borderRadius: '12px' }}
                 itemStyle={{ color: '#fff' }}
               />
-              <Bar dataKey="litros" fill="#6366F1" radius={[4, 4, 0, 0]} maxBarSize={30} />
+              <Bar dataKey="litros" radius={[4, 4, 0, 0]} maxBarSize={30}>
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={getBarColor(entry.litros)} fillOpacity={0.85} />
+                ))}
+              </Bar>
               <Line type="monotone" dataKey="promedio" stroke="#8B5CF6" strokeWidth={2} dot={false} />
             </ComposedChart>
           </ResponsiveContainer>

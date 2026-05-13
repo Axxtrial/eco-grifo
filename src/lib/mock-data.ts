@@ -115,6 +115,15 @@ export const mockAlertas: Alerta[] = [
     grifoId: "g1",
   },
   {
+    id: "a4",
+    tipo: "consumo_alto",
+    titulo: "¡Alerta de consumo alto!",
+    descripcion: "El consumo total del día ha superado el 80% de tu meta diaria de 150 L. Revisa tus grifos activos.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    leida: false,
+    grifoId: "g2",
+  },
+  {
     id: "a3",
     tipo: "desconectado",
     titulo: "Grifo fuera de línea",

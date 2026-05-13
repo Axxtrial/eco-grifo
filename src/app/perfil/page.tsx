@@ -49,7 +49,7 @@ export default function Perfil() {
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                 <Bell className="w-4 h-4" />
               </div>
-              <span className="text-sm text-white font-medium">Notificaciones push</span>
+              <span className="text-sm text-white font-medium">Notificaciones</span>
             </div>
             <button 
               onClick={() => setNotificaciones(!notificaciones)}
