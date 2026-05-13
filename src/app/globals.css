@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --foreground: #ffffff;
+    --background: #0A0A0F;
+  }
+  
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    /* Mobile-first constraints on desktop */
+    @apply mx-auto max-w-[430px] min-h-screen relative shadow-2xl overflow-x-hidden;
+  }
+
+  /* Si estamos en pantallas grandes, el fondo externo será un negro distinto */
+  @media (min-width: 431px) {
+    html {
+      background-color: #050508;
+      display: flex;
+      justify-content: center;
+    }
+    body {
+      width: 100%;
+      border-left: 1px solid #1E1E2E;
+      border-right: 1px solid #1E1E2E;
+    }
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+  .bg-gradient-btn {
+    @apply bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow;
+  }
+}
