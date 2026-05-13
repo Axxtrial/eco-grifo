@@ -15,7 +15,7 @@ export default function Historial() {
     : historial.filter(h => h.grifoId === selectedGrifoId);
 
   // Preparar datos de gráfica
-  const dataMap = filteredHistorial.reduce((acc: any, curr) => {
+  const dataMap = filteredHistorial.reduce((acc: Record<string, { name: string; litros: number }>, curr) => {
     const fechaCortada = curr.fecha.split("-").slice(1).join("/");
     if (!acc[fechaCortada]) acc[fechaCortada] = { name: fechaCortada, litros: 0 };
     acc[fechaCortada].litros += curr.litros;

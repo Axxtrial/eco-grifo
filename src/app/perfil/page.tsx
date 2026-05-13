@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppContext } from "@/lib/context";
-import { User, Mail, Lock, Bell, LogOut, AlertTriangle } from "lucide-react";
+import { Mail, Lock, Bell, LogOut, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
 export default function Perfil() {

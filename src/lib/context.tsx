@@ -31,7 +31,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario>(mockUsuario);
   const [grifos, setGrifos] = useState<Grifo[]>(mockGrifos);
   const [alertas, setAlertas] = useState<Alerta[]>(mockAlertas);
-  const [historial, setHistorial] = useState<HistorialConsumo[]>(mockHistorial);
+  const [historial, _setHistorial] = useState<HistorialConsumo[]>(mockHistorial);
 
   // Simular consumo en tiempo real
   useEffect(() => {

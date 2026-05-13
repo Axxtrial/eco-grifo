@@ -29,7 +29,7 @@ export default function Home() {
 
   // Preparar datos para la gráfica
   // Agrupar historial por fecha
-  const dataMap = historial.reduce((acc: any, curr) => {
+  const dataMap = historial.reduce((acc: Record<string, { name: string; litros: number }>, curr) => {
     const fechaCortada = curr.fecha.split("-").slice(1).join("/");
     if (!acc[fechaCortada]) {
       acc[fechaCortada] = { name: fechaCortada, litros: 0 };
@@ -38,7 +38,7 @@ export default function Home() {
     return acc;
   }, {});
 
-  const chartData = Object.values(dataMap).reverse().map((d: any) => ({
+  const chartData = Object.values(dataMap).reverse().map((d) => ({
     ...d,
     promedio: d.litros * 0.8 // Línea de promedio simulada
   }));

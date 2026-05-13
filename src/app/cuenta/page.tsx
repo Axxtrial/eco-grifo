@@ -19,7 +19,6 @@ export default function Cuenta() {
   const [tempMeta, setTempMeta] = useState(usuario.metaDiariaLitros.toString());
 
   const totalConsumoMes = grifos.reduce((acc, g) => acc + g.consumoHoy * 30, 0); // simulado
-  const grifoMasUsado = [...grifos].sort((a, b) => b.consumoHoy - a.consumoHoy)[0];
 
   const handleSaveMeta = () => {
     const val = parseInt(tempMeta, 10);
