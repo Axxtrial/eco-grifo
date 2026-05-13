@@ -89,7 +89,7 @@ export default function Historial() {
               <Tooltip
                 contentStyle={{ backgroundColor: '#12121A', borderColor: '#1E1E2E', borderRadius: '12px' }}
                 itemStyle={{ color: '#fff' }}
-                formatter={(value: number) => [`${value} L`, 'Consumo']}
+                formatter={(value: unknown) => [`${value} L`, 'Consumo']}
               />
               <Bar dataKey="litros" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, index) => (
