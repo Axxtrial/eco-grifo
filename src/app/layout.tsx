@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AppProvider } from "@/lib/context";
-import BottomNav from "@/components/BottomNav";
+import ProtectedLayout from "@/components/ProtectedLayout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "TuGrifo - Smart Water Monitoring",
+  title: "EcoGrifo - Smart Water Monitoring",
   description: "App de monitoreo inteligente de grifos domésticos IoT",
 };
 
@@ -28,13 +28,10 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#080710]`}
       >
         <AppProvider>
-          <div className="pb-20">
-            {children}
-          </div>
-          <BottomNav />
+          <ProtectedLayout>{children}</ProtectedLayout>
         </AppProvider>
       </body>
     </html>

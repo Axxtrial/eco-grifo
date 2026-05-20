@@ -71,58 +71,79 @@ export default function Historial() {
 
       <div className="mb-8">
         <h3 className="text-white font-semibold mb-4">Últimos 30 días</h3>
-        <div className="h-64 bg-card border border-border rounded-3xl p-4 pt-6">
-          {/* Leyenda */}
-          <div className="flex gap-4 mb-3 justify-end">
-            <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
-              <span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" />Normal
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
-              <span className="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block" />Consumo alto
-            </span>
-          </div>
-          <ResponsiveContainer width="100%" height="85%">
-            <BarChart data={chartData} barSize={18}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1E1E2E" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dx={-10} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#12121A', borderColor: '#1E1E2E', borderRadius: '12px' }}
-                itemStyle={{ color: '#fff' }}
-                formatter={(value: unknown) => [`${value} L`, 'Consumo']}
-              />
-              <Bar dataKey="litros" radius={[4, 4, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell key={index} fill={getBarColor(entry.litros)} fillOpacity={0.85} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="h-64 bg-card border border-border rounded-3xl p-4 flex flex-col justify-center items-center">
+          {chartData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center p-6 animate-in fade-in duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+                <Droplet className="w-6 h-6 animate-pulse" />
+              </div>
+              <h4 className="text-sm font-bold text-white mb-1">Sin estadísticas</h4>
+              <p className="text-xs text-muted max-w-[240px] leading-relaxed">
+                No hay consumos registrados en este período. Registra flujos en tu simulador para visualizar las gráficas.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Leyenda */}
+              <div className="flex gap-4 mb-3 w-full justify-end pr-4">
+                <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" />Normal
+                </span>
+                <span className="flex items-center gap-1.5 text-[10px] text-muted font-medium">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block" />Consumo alto
+                </span>
+              </div>
+              <ResponsiveContainer width="100%" height="80%">
+                <BarChart data={chartData} barSize={18}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1E1E2E" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#A1A1AA', fontSize: 10}} dx={-10} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#12121A', borderColor: '#1E1E2E', borderRadius: '12px' }}
+                    itemStyle={{ color: '#fff' }}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    formatter={(value: any) => [`${value} L`, 'Consumo']}
+                  />
+                  <Bar dataKey="litros" radius={[4, 4, 0, 0]}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={index} fill={getBarColor(entry.litros)} fillOpacity={0.85} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </>
+          )}
         </div>
       </div>
 
       <div>
         <h3 className="text-white font-semibold mb-4">Registros recientes</h3>
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          {filteredHistorial.slice(0, 10).map((registro, idx) => {
-            const grifoNombre = grifos.find(g => g.id === registro.grifoId)?.nombre || 'Desconocido';
-            return (
-              <div key={idx} className="flex justify-between items-center p-4 border-b border-border/50 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <CalendarDays className="w-5 h-5" />
+          {filteredHistorial.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted">
+              No hay lecturas registradas.
+            </div>
+          ) : (
+            filteredHistorial.slice(0, 10).map((registro, idx) => {
+              const grifoNombre = grifos.find(g => g.id === registro.grifoId)?.nombre || 'Desconocido';
+              return (
+                <div key={idx} className="flex justify-between items-center p-4 border-b border-border/50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <CalendarDays className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{registro.fecha}</p>
+                      <p className="text-xs text-muted">{grifoNombre} • {registro.duracionMinutos} min</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{registro.fecha}</p>
-                    <p className="text-xs text-muted">{grifoNombre} • {registro.duracionMinutos} min</p>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-white">{registro.litros} L</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-white">{registro.litros} L</p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
 

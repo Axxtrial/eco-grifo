@@ -33,8 +33,8 @@ export interface Usuario {
 }
 
 export const mockUsuario: Usuario = {
-  nombre: "Usuario Demo",
-  correo: "demo@tugrifo.app",
+  nombre: "Usuario EcoGrifo",
+  correo: "usuario@ecogrifo.app",
   metaDiariaLitros: 150,
 };
 

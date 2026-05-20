@@ -1,12 +1,19 @@
 "use client";
 
 import { useAppContext } from "@/lib/context";
-import { Mail, Lock, Bell, LogOut, AlertTriangle } from "lucide-react";
+import { Mail, Lock, Bell, LogOut, AlertTriangle, Cpu } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Perfil() {
-  const { usuario } = useAppContext();
+  const { usuario, logout, eliminarCuenta } = useAppContext();
   const [notificaciones, setNotificaciones] = useState(true);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    await eliminarCuenta();
+    setShowConfirmDelete(false);
+  };
 
   return (
     <main className="p-6">
@@ -44,6 +51,18 @@ export default function Perfil() {
             </div>
           </div>
 
+          <Link href="/simulador" className="p-4 flex items-center justify-between border-b border-border/50 hover:bg-white/5 transition-colors cursor-pointer block">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <Cpu className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm text-white font-medium block">Simulador Grifo IoT</span>
+                <span className="text-[10px] text-muted block">Abrir panel interactivo de demostración</span>
+              </div>
+            </div>
+          </Link>
+
           <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -65,25 +84,65 @@ export default function Perfil() {
       <div className="mb-8">
         <h3 className="text-xs text-red-500/80 uppercase font-bold tracking-wider mb-3 ml-2">Peligro</h3>
         <div className="bg-red-500/5 border border-red-500/20 rounded-2xl overflow-hidden">
-          <div className="p-4 flex items-center justify-between hover:bg-red-500/10 transition-colors cursor-pointer">
+          <button 
+            onClick={() => setShowConfirmDelete(true)}
+            className="w-full p-4 flex items-center justify-between hover:bg-red-500/10 transition-colors cursor-pointer text-left"
+          >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
                 <AlertTriangle className="w-4 h-4" />
               </div>
               <span className="text-sm text-red-500 font-medium">Eliminar cuenta</span>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 
-      <button className="w-full flex items-center justify-center gap-2 py-4 text-muted hover:text-white transition-colors">
+      <button 
+        onClick={logout}
+        className="w-full flex items-center justify-center gap-2 py-4 text-muted hover:text-white transition-colors"
+      >
         <LogOut className="w-5 h-5" />
         <span className="font-semibold text-sm">Cerrar Sesión</span>
       </button>
 
       <p className="text-center text-xs text-muted/50 mt-8 mb-4">
-        TuGrifo App v1.0.0
+        EcoGrifo App v1.0.0
       </p>
+
+      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN DE CUENTA (Wow Factor) */}
+      {showConfirmDelete && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-card w-full max-w-sm rounded-[32px] border border-red-500/20 p-6 relative overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+            {/* Círculo difuminado rojo */}
+            <div className="absolute top-[-20%] left-[-20%] w-[200px] h-[200px] bg-red-500/10 rounded-full blur-[60px] pointer-events-none" />
+
+            <div className="w-12 h-12 rounded-2xl bg-red-500/15 flex items-center justify-center text-red-500 mb-5 mx-auto border border-red-500/20">
+              <AlertTriangle className="w-6 h-6 animate-pulse" />
+            </div>
+
+            <h3 className="text-xl font-black text-white text-center mb-2">¿Eliminar tu cuenta?</h3>
+            <p className="text-xs text-muted text-center leading-relaxed mb-6">
+              Esta acción es irreversible y borrará permanentemente todos tus grifos vinculados, historial de consumo y alertas asociadas de <strong>EcoGrifo</strong>.
+            </p>
+
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowConfirmDelete(false)}
+                className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs border border-white/10 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleDeleteAccount}
+                className="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-xs transition-colors shadow-lg shadow-red-500/20"
+              >
+                Sí, Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </main>
   );

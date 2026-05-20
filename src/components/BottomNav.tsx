@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, History, Bell, Droplets, User } from "lucide-react";
+import { Home, History, Bell, Droplets, Sparkles } from "lucide-react";
 import { useAppContext } from "@/lib/context";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -18,9 +18,9 @@ export default function BottomNav() {
   const navItems = [
     { href: "/", icon: Home },
     { href: "/historial", icon: History },
+    { href: "/eco-coach", icon: Sparkles },
     { href: "/alertas", icon: Bell, badge: alertasNoLeidas },
     { href: "/cuenta", icon: Droplets },
-    { href: "/perfil", icon: User },
   ];
 
   return (
