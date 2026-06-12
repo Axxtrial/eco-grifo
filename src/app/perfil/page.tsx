@@ -1,9 +1,9 @@
 "use client";
 
-import { useAppContext } from "@/lib/context";
-import { Mail, Lock, Bell, LogOut, AlertTriangle, Cpu } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
+import { useAppContext } from "@/lib/context";
+import { Mail, Lock, Bell, LogOut, AlertTriangle } from "lucide-react";
+
 
 export default function Perfil() {
   const { usuario, logout, eliminarCuenta } = useAppContext();
@@ -51,17 +51,7 @@ export default function Perfil() {
             </div>
           </div>
 
-          <Link href="/simulador" className="p-4 flex items-center justify-between border-b border-border/50 hover:bg-white/5 transition-colors cursor-pointer block">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-sm text-white font-medium block">Simulador Grifo IoT</span>
-                <span className="text-[10px] text-muted block">Abrir panel interactivo de demostración</span>
-              </div>
-            </div>
-          </Link>
+
 
           <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
             <div className="flex items-center gap-3">
