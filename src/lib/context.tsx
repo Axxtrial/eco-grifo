@@ -17,8 +17,8 @@ import { Session } from "@supabase/supabase-js";
 const determinarStatusGrifo = (statusDb: string, ultimaActividad: string): "online" | "offline" | "alerta" => {
   if (!ultimaActividad) return "offline";
   const diff = Date.now() - new Date(ultimaActividad).getTime();
-  // Si no ha reportado actividad en los últimos 25 segundos, se considera offline.
-  if (diff > 25000) return "offline";
+  // Si no ha reportado actividad en los últimos 75 segundos, se considera offline.
+  if (diff > 75000) return "offline";
   return statusDb as "online" | "offline" | "alerta";
 };
 
@@ -303,7 +303,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           return g;
         })
       );
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [sesion]);

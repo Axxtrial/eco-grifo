@@ -38,38 +38,7 @@ export const mockUsuario: Usuario = {
   metaDiariaLitros: 150,
 };
 
-export const mockGrifos: Grifo[] = [
-  {
-    id: "g1",
-    nombre: "Grifo Cocina",
-    ubicacion: "Cocina",
-    ip: "192.168.1.101",
-    status: "online",
-    consumoHoy: 45.5,
-    consumoTiempoReal: 0,
-    ultimaActividad: new Date().toISOString(),
-  },
-  {
-    id: "g2",
-    nombre: "Grifo Baño",
-    ubicacion: "Baño principal",
-    ip: "192.168.1.102",
-    status: "alerta",
-    consumoHoy: 85.2,
-    consumoTiempoReal: 2.1,
-    ultimaActividad: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-  },
-  {
-    id: "g3",
-    nombre: "Grifo Jardín",
-    ubicacion: "Jardín",
-    ip: "192.168.1.103",
-    status: "offline",
-    consumoHoy: 0,
-    consumoTiempoReal: 0,
-    ultimaActividad: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-  },
-];
+export const mockGrifos: Grifo[] = [];
 
 // Generar historial de 7 días (mock dinámico para tener fechas recientes)
 const generarHistorial = (): HistorialConsumo[] => {
