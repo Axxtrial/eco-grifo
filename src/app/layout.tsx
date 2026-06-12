@@ -15,9 +15,24 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+import type { Viewport } from "next";
+
 export const metadata: Metadata = {
-  title: "EcoGrifo - Smart Water Monitoring",
+  title: "EcoGrifo - App",
   description: "App de monitoreo inteligente de grifos domésticos IoT",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "EcoGrifo",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#080710",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

@@ -389,7 +389,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const agregarGrifo = async (grifo: Grifo) => {
     if (supabase && sesion) {
-      const { error } = await supabase.from("grifos").insert({
+      const { data, error } = await supabase.from("grifos").insert({
         nombre: grifo.nombre,
         ubicacion: grifo.ubicacion,
         ip: grifo.ip,
@@ -398,8 +398,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         consumo_tiempo_real: grifo.consumoTiempoReal,
         ultima_actividad: grifo.ultimaActividad,
         usuario_id: sesion.user.id
-      });
-      if (error) console.error("Error guardando grifo en Supabase:", error);
+      }).select().single();
+
+      if (error) {
+        console.error("Error guardando grifo en Supabase:", error);
+      } else if (data) {
+        setGrifos(prev => {
+          if (prev.some(x => x.id === data.id)) return prev;
+          return [...prev, {
+            id: data.id,
+            nombre: data.nombre,
+            ubicacion: data.ubicacion,
+            ip: data.ip || "",
+            status: data.status as "online" | "offline" | "alerta",
+            consumoHoy: parseFloat(data.consumo_hoy || "0"),
+            consumoTiempoReal: parseFloat(data.consumo_tiempo_real || "0"),
+            ultimaActividad: data.ultima_actividad
+          }];
+        });
+      }
     } else {
       setGrifos(prev => [...prev, grifo]);
     }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/lib/context";
-import { UserCircle, Cpu, Droplet, Sparkles } from "lucide-react";
+import { UserCircle, Droplet } from "lucide-react";
 import GrifoCard from "@/components/GrifoCard";
 import {
   ComposedChart,
@@ -89,10 +89,6 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <Link href="/simulador" className="px-3.5 py-2.5 rounded-xl border border-primary/20 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95">
-            <Cpu className="w-3.5 h-3.5 animate-pulse" />
-            <span>Simular</span>
-          </Link>
         </div>
       </div>
 
@@ -110,25 +106,6 @@ export default function Home() {
             style={{ width: `${porcentajeMeta}%` }}
           />
         </div>
-      </div>
-
-      {/* Banner Eco-Coach */}
-      <div className="bg-gradient-to-r from-[#171626] to-[#12121A] border border-primary/15 p-4 rounded-2xl mb-8 flex items-center justify-between relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -mr-4 -mt-4" />
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-9 h-9 rounded-xl bg-gradient-btn flex items-center justify-center shrink-0 shadow-md shadow-primary/15">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-white mb-0.5">Asesor Eco-Coach IA</h4>
-            <p className="text-[10px] text-muted leading-relaxed max-w-[210px]">
-              ¿Tienes fugas silenciosas? Recibe un diagnóstico ecológico en segundos.
-            </p>
-          </div>
-        </div>
-        <Link href="/eco-coach" className="px-3.5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/25 rounded-xl text-primary text-[10px] font-bold transition-all relative z-10 active:scale-95">
-          Consultar
-        </Link>
       </div>
 
       {/* Accesos rápidos a Grifos */}

@@ -44,22 +44,7 @@ export default function AddGrifoFlow({ onClose }: AddGrifoFlowProps) {
     if (step < 3) setStep(step + 1);
   };
 
-  // Simulación local para pruebas offline / Mock Mode
-  const handleSimulateIoTDevice = () => {
-    const nuevoGrifo: Grifo = {
-      id: `g_${Date.now()}`,
-      nombre: nombreGrifo.trim() || "Grifo Inteligente",
-      ubicacion: ubicacionGrifo.trim() || "Cocina",
-      ip: `192.168.1.${Math.floor(Math.random() * 150) + 100}`,
-      status: "online",
-      consumoHoy: 0,
-      consumoTiempoReal: 0,
-      ultimaActividad: new Date().toISOString()
-    };
 
-    // Esto gatillará grifos.length > initialCount y nos llevará al Paso 4
-    agregarGrifo(nuevoGrifo);
-  };
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
@@ -225,13 +210,6 @@ export default function AddGrifoFlow({ onClose }: AddGrifoFlowProps) {
                 </p>
               </div>
 
-              {/* Botón de fallback para simular IoT sin hardware */}
-              <button 
-                onClick={handleSimulateIoTDevice}
-                className="w-full text-xs font-bold text-primary hover:text-secondary border border-primary/20 hover:border-primary/40 py-3 rounded-xl transition-all bg-primary/5 uppercase tracking-wider mb-2"
-              >
-                ⚡ Simular Registro IoT
-              </button>
             </div>
           )}
 
