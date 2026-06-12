@@ -14,6 +14,14 @@ import {
 import { supabase } from "./supabase";
 import { Session } from "@supabase/supabase-js";
 
+const determinarStatusGrifo = (statusDb: string, ultimaActividad: string): "online" | "offline" | "alerta" => {
+  if (!ultimaActividad) return "offline";
+  const diff = Date.now() - new Date(ultimaActividad).getTime();
+  // Si no ha reportado actividad en los últimos 25 segundos, se considera offline.
+  if (diff > 25000) return "offline";
+  return statusDb as "online" | "offline" | "alerta";
+};
+
 interface AppContextType {
   usuario: Usuario;
   grifos: Grifo[];
@@ -130,7 +138,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           nombre: g.nombre,
           ubicacion: g.ubicacion,
           ip: g.ip || "",
-          status: g.status as "online" | "offline" | "alerta",
+          status: determinarStatusGrifo(g.status, g.ultima_actividad),
           consumoHoy: parseFloat(g.consumo_hoy || "0"),
           consumoTiempoReal: parseFloat(g.consumo_tiempo_real || "0"),
           ultimaActividad: g.ultima_actividad
@@ -203,7 +211,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 nombre: newG.nombre,
                 ubicacion: newG.ubicacion,
                 ip: newG.ip || "",
-                status: newG.status as "online" | "offline" | "alerta",
+                status: determinarStatusGrifo(newG.status, newG.ultima_actividad),
                 consumoHoy: parseFloat(newG.consumo_hoy || "0"),
                 consumoTiempoReal: parseFloat(newG.consumo_tiempo_real || "0"),
                 ultimaActividad: newG.ultima_actividad
@@ -216,7 +224,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               nombre: updatedG.nombre,
               ubicacion: updatedG.ubicacion,
               ip: updatedG.ip || "",
-              status: updatedG.status as "online" | "offline" | "alerta",
+              status: determinarStatusGrifo(updatedG.status, updatedG.ultima_actividad),
               consumoHoy: parseFloat(updatedG.consumo_hoy || "0"),
               consumoTiempoReal: parseFloat(updatedG.consumo_tiempo_real || "0"),
               ultimaActividad: updatedG.ultima_actividad
@@ -280,6 +288,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     sincronizarPerfil();
   }, [usuario, sesion]);
+
+  // 4b. Chequear de forma continua el estado de conexión de los grifos reales
+  useEffect(() => {
+    if (!supabase || !sesion) return;
+
+    const interval = setInterval(() => {
+      setGrifos((prevGrifos) =>
+        prevGrifos.map((g) => {
+          const nuevoStatus = determinarStatusGrifo(g.status, g.ultimaActividad);
+          if (nuevoStatus !== g.status) {
+            return { ...g, status: nuevoStatus };
+          }
+          return g;
+        })
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [sesion]);
 
   // 5. Simular consumo en tiempo real (solo activo en modo simulado para evitar escrituras masivas innecesarias)
   useEffect(() => {
@@ -410,7 +437,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             nombre: data.nombre,
             ubicacion: data.ubicacion,
             ip: data.ip || "",
-            status: data.status as "online" | "offline" | "alerta",
+            status: determinarStatusGrifo(data.status, data.ultima_actividad),
             consumoHoy: parseFloat(data.consumo_hoy || "0"),
             consumoTiempoReal: parseFloat(data.consumo_tiempo_real || "0"),
             ultimaActividad: data.ultima_actividad
