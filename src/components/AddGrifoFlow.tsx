@@ -11,7 +11,7 @@ interface AddGrifoFlowProps {
 
 export default function AddGrifoFlow({ onClose }: AddGrifoFlowProps) {
   const [step, setStep] = useState(1);
-  const { grifos, sesion, agregarGrifo } = useAppContext();
+  const { grifos, sesion } = useAppContext();
   
   const [nombreGrifo, setNombreGrifo] = useState("Grifo Cocina");
   const [ubicacionGrifo, setUbicacionGrifo] = useState("Cocina");
