@@ -95,20 +95,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Helper: si el grifo no ha enviado keepalive en los últimos 2 minutos → offline + flujo = 0
-  const derivarEstado = (g: {
-    status: string;
-    consumo_tiempo_real: string | number;
-    ultima_actividad: string;
-  }): { status: "online" | "offline" | "alerta"; consumoTiempoReal: number } => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const derivarEstado = (g: { [key: string]: unknown }): { status: "online" | "offline" | "alerta"; consumoTiempoReal: number } => {
     const TIMEOUT_MS = 2 * 60 * 1000; // 2 minutos
-    const ultimaAct = g.ultima_actividad ? new Date(g.ultima_actividad).getTime() : 0;
+    const ultimaActStr = g.ultima_actividad as string | undefined;
+    const ultimaAct = ultimaActStr ? new Date(ultimaActStr).getTime() : 0;
     const inactivo = Date.now() - ultimaAct > TIMEOUT_MS;
     if (inactivo) {
       return { status: "offline", consumoTiempoReal: 0 };
     }
     return {
-      status: g.status as "online" | "offline" | "alerta",
-      consumoTiempoReal: parseFloat(String(g.consumo_tiempo_real) || "0")
+      status: (g.status as "online" | "offline" | "alerta") || "offline",
+      consumoTiempoReal: parseFloat(String(g.consumo_tiempo_real ?? "0"))
     };
   };
 
