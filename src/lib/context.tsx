@@ -94,6 +94,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Helper: si el grifo no ha enviado keepalive en los últimos 2 minutos → offline + flujo = 0
+  const derivarEstado = (g: {
+    status: string;
+    consumo_tiempo_real: string | number;
+    ultima_actividad: string;
+  }): { status: "online" | "offline" | "alerta"; consumoTiempoReal: number } => {
+    const TIMEOUT_MS = 2 * 60 * 1000; // 2 minutos
+    const ultimaAct = g.ultima_actividad ? new Date(g.ultima_actividad).getTime() : 0;
+    const inactivo = Date.now() - ultimaAct > TIMEOUT_MS;
+    if (inactivo) {
+      return { status: "offline", consumoTiempoReal: 0 };
+    }
+    return {
+      status: g.status as "online" | "offline" | "alerta",
+      consumoTiempoReal: parseFloat(String(g.consumo_tiempo_real) || "0")
+    };
+  };
+
   // 2. Cargar datos desde Supabase
   const cargarDatosSupabase = async (userId: string) => {
     if (!supabase) return;
@@ -133,16 +151,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .order("created_at", { ascending: true });
 
       if (dbGrifos && dbGrifos.length > 0) {
-        setGrifos(dbGrifos.map(g => ({
-          id: g.id,
-          nombre: g.nombre,
-          ubicacion: g.ubicacion,
-          ip: g.ip || "",
-          status: determinarStatusGrifo(g.status, g.ultima_actividad),
-          consumoHoy: parseFloat(g.consumo_hoy || "0"),
-          consumoTiempoReal: parseFloat(g.consumo_tiempo_real || "0"),
-          ultimaActividad: g.ultima_actividad
-        })));
+        setGrifos(dbGrifos.map(g => {
+          const { status, consumoTiempoReal } = derivarEstado(g);
+          return {
+            id: g.id,
+            nombre: g.nombre,
+            ubicacion: g.ubicacion,
+            ip: g.ip || "",
+            status,
+            consumoHoy: parseFloat(g.consumo_hoy || "0"),
+            consumoTiempoReal,
+            ultimaActividad: g.ultima_actividad
+          };
+        }));
       } else {
         // Si el usuario es nuevo y no tiene grifos, insertar algunos por defecto opcionalmente
         // o dejar la lista vacía para que use el AddGrifoFlow.
@@ -211,7 +232,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 nombre: newG.nombre,
                 ubicacion: newG.ubicacion,
                 ip: newG.ip || "",
-                status: determinarStatusGrifo(newG.status, newG.ultima_actividad),
+                status: derivarEstado(newG).status,
                 consumoHoy: parseFloat(newG.consumo_hoy || "0"),
                 consumoTiempoReal: parseFloat(newG.consumo_tiempo_real || "0"),
                 ultimaActividad: newG.ultima_actividad
@@ -219,14 +240,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             });
           } else if (payload.eventType === "UPDATE") {
             const updatedG = payload.new;
+            const { status: derivedStatus, consumoTiempoReal: derivedFlujo } = derivarEstado(updatedG);
             setGrifos(prev => prev.map(x => x.id === updatedG.id ? {
               ...x,
               nombre: updatedG.nombre,
               ubicacion: updatedG.ubicacion,
               ip: updatedG.ip || "",
-              status: determinarStatusGrifo(updatedG.status, updatedG.ultima_actividad),
+              status: derivedStatus,
               consumoHoy: parseFloat(updatedG.consumo_hoy || "0"),
-              consumoTiempoReal: parseFloat(updatedG.consumo_tiempo_real || "0"),
+              consumoTiempoReal: derivedFlujo,
               ultimaActividad: updatedG.ultima_actividad
             } : x));
           } else if (payload.eventType === "DELETE") {
@@ -289,23 +311,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sincronizarPerfil();
   }, [usuario, sesion]);
 
-  // 4b. Chequear de forma continua el estado de conexión de los grifos reales
+  // 4b. Watchdog: revisar estado de grifos cada 30 segundos basado en ultima_actividad
+  // Esto marca OFFLINE automaticamente cuando el grifo se desconecta sin poder avisar
   useEffect(() => {
     if (!supabase || !sesion) return;
 
-    const interval = setInterval(() => {
-      setGrifos((prevGrifos) =>
-        prevGrifos.map((g) => {
-          const nuevoStatus = determinarStatusGrifo(g.status, g.ultimaActividad);
-          if (nuevoStatus !== g.status) {
-            return { ...g, status: nuevoStatus };
-          }
-          return g;
-        })
-      );
-    }, 60000);
+    const watchdog = setInterval(() => {
+      setGrifos(prev => prev.map(grifo => {
+        const TIMEOUT_MS = 2 * 60 * 1000;
+        const ultimaAct = grifo.ultimaActividad ? new Date(grifo.ultimaActividad).getTime() : 0;
+        const inactivo = Date.now() - ultimaAct > TIMEOUT_MS;
+        if (inactivo && (grifo.status === "online" || grifo.status === "alerta")) {
+          return { ...grifo, status: "offline", consumoTiempoReal: 0 };
+        }
+        return grifo;
+      }));
+    }, 30000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(watchdog);
   }, [sesion]);
 
   // 5. Simular consumo en tiempo real (solo activo en modo simulado para evitar escrituras masivas innecesarias)
